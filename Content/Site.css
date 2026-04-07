@@ -1,0 +1,68 @@
+﻿body {
+    padding-top: 50px;
+    padding-bottom: 20px;
+}
+
+/* Set padding to keep content from hitting the edges */
+.body-content {
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+/* Override the default bootstrap behavior where horizontal description lists 
+   will truncate terms that are too long to fit in the left column 
+*/
+.dl-horizontal dt {
+    white-space: normal;
+}
+
+/* Set width on the form input elements since they're 100% wide by default */
+input,
+select,
+textarea {
+    max-width: 280px;
+}
+#navb{
+    margin-left:5%;
+    margin-right:5%;
+    margin-top:0.5%; 
+    background-color:dimgrey  ;
+    border:none;
+    color:white;
+}
+#signincontent {
+    margin-left: 25%;
+    margin-right: 25%;
+    margin-top: 10%;
+    
+    background-color:gray;
+    padding:1%;
+
+    border-radius:15px;
+    overflow:hidden;
+    
+}
+#signinname{
+   text-align:center;
+
+}
+#result{
+    text-align:center;
+    color:darkseagreen;
+}
+#navb .navbar-nav > li > a {
+    color: white !important;   /* or any color you want */
+}
+hr {
+    width: 100%;
+    border: 1px solid white; /* or your preferred color */
+    margin: 20px 0;
+}
+#signinforgetpass{
+    display:flex;
+
+}
+#cna{
+    margin-left: 64%    ;
+}
+

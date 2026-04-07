@@ -1,0 +1,79 @@
+﻿
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>_AdminLayout</title>
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+
+
+</head>
+<body>
+    <div class="navbar navbar-inverse" id="navb">
+
+        <div class="navcontent">
+            <div class="container">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+
+                </div>
+                <div class="navbar-collapse collapse">
+                    <ul class="nav navbar-nav" id="navlinks">
+                        <li>@Html.ActionLink("Dashboard", "Index", "Adminpage")</li>
+                        <li>@Html.ActionLink("UserData", "userCRUD", "Adminpage")</li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">Courses</a>
+                            @Html.Action("NavbarCourses", "Adminpage")
+                        </li>
+
+
+                    </ul>
+                    @Html.Partial("_LoginPartial")
+                </div>
+            </div>
+
+        </div>
+
+
+
+    </div>
+    <div class="container body-content">
+        @RenderBody()
+        <hr />
+        <footer>
+            <p>&copy; @DateTime.Now.Year - Akerix Learning</p>
+        </footer>
+    </div>
+    <script>
+        document.querySelectorAll('.dropdown').forEach(function (dropdown) {
+            dropdown.addEventListener('mouseenter', function () {
+                const menu = bootstrap.Dropdown.getOrCreateInstance(dropdown.querySelector('[data-bs-toggle="dropdown"]'));
+                menu.show();
+            });
+            dropdown.addEventListener('mouseleave', function () {
+                const menu = bootstrap.Dropdown.getInstance(dropdown.querySelector('[data-bs-toggle="dropdown"]'));
+                menu.hide();
+            });
+        });
+    </script>
+
+
+
+
+
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/bootstrap")
+    @RenderSection("scripts", required: false)
+
+</body>
+</html>

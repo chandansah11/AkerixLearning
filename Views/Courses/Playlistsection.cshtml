@@ -1,0 +1,155 @@
+﻿@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Playlist Section</title>
+
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/bootstrap")
+
+    <style>
+        /* main layout */
+        #maincontainer {
+            padding: 2rem;
+        }
+
+        p, h3 {
+            color: gray;
+        }
+
+        #description {
+            border: none;
+            padding: 1rem;
+            box-shadow: 1px 2px 4px lightgray;
+        }
+
+        /* playlist + video layout */
+        #playlistcontent {
+            margin-top: 3rem;
+        }
+
+        /* left column - playlist */
+        #playlistcol {
+            box-shadow: 1px 2px 4px lightgray;
+            max-height: 500px;
+            overflow-y: auto; /* scroll when table too long */
+        }
+
+            #playlistcol table {
+                width: 100%;
+            }
+
+            #playlistcol tr:hover {
+                background-color: #f1f1f1;
+                cursor: pointer;
+            }
+
+        /* right column - video player */
+        #vidpart {
+            background-color: aliceblue;
+            box-shadow: 1px 2px 4px lightgray;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 1rem;
+        }
+
+        /* make iframe responsive */
+        .video-frame {
+            width: 100%;
+            aspect-ratio: 16 / 9;
+        }
+        #gobackbtn{
+            margin-bottom:2rem;
+            display:flex;
+        }#headersec{
+             display:flex;
+         }
+        .row{
+            display:
+        }
+
+    </style>
+</head>
+
+<body>
+    <div class="container-fluid" id="maincontainer">
+        <div class="container">
+            <div class="row">
+                <div class="col-12 col-md-4" id="leftCol">
+                    <button class="btn btn-secondary" onclick="window.location.href='@Url.Action("Index", "Courses")'"> Go Back</button>
+                </div>
+
+                <div class="col-12 col-md-8" id="rightCol">
+                    <h1>Akerix Learning</h1>
+                </div>
+            </div>
+        </div>
+
+        <div class="container" id="description">
+            <h3 class="text-center">C# Basic</h3>
+            <p>
+                C# (pronounced C sharp) is a modern, object-oriented programming language developed by Microsoft as part of the .NET platform.
+                It was designed to be simple, powerful, and type-safe, combining the efficiency of C++ with the ease of use of languages like Java.
+                C# is widely used for building desktop applications, web applications (using ASP.NET), mobile apps (with Xamarin or .NET MAUI),
+                and even games (using Unity).
+            </p>
+        </div>
+
+        <!-- playlist + video section -->
+        <div class="container" id="playlistcontent">
+            <div class="row">
+                <!-- Left column: Playlist -->
+                <div class="col-12 col-md-3" id="playlistcol">
+                    <table class="table table-hover align-middle">
+                        <thead class="table-light">
+                            <tr><th>C# Basics</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr onclick="loadVideo('https://www.youtube.com/embed/Cc33wOBAKDM')"><td>Introduction</td></tr>
+                            <tr onclick="loadVideo('https://www.youtube.com/embed/Z1RJmh_OqeA')"><td>Variables and Data Types</td></tr>
+                            <tr onclick="loadVideo('https://www.youtube.com/embed/sBws8MSXN7A')"><td>Loops and Conditions</td></tr>
+                            <tr onclick="loadVideo('https://www.youtube.com/embed/jA0z0Lm8E20')"><td>OOP Basics</td></tr>
+                            <tr onclick="loadVideo('https://www.youtube.com/embed/W6NZfCO5SIk')"><td>Collections</td></tr>
+                            <tr onclick="loadVideo('https://www.youtube.com/embed/tgbNymZ7vqY')"><td>LINQ Overview</td></tr>
+                            <tr onclick="loadVideo('https://www.youtube.com/embed/tgbNymZ7vqY')"><td>LINQ Overview</td></tr>
+                            <tr onclick="loadVideo('https://www.youtube.com/embed/tgbNymZ7vqY')"><td>LINQ Overview</td></tr>
+                            <tr onclick="loadVideo('https://www.youtube.com/embed/tgbNymZ7vqY')"><td>LINQ Overview</td></tr>
+                            <tr onclick="loadVideo('https://www.youtube.com/embed/tgbNymZ7vqY')"><td>LINQ Overview</td></tr>
+                            <tr onclick="loadVideo('https://www.youtube.com/embed/tgbNymZ7vqY')"><td>LINQ Overview</td></tr>
+                            <tr onclick="loadVideo('https://www.youtube.com/embed/tgbNymZ7vqY')"><td>LINQ Overview</td></tr>
+                            <tr onclick="loadVideo('https://www.youtube.com/embed/tgbNymZ7vqY')"><td>LINQ Overview</td></tr>
+                            <tr onclick="loadVideo('https://www.youtube.com/embed/tgbNymZ7vqY')"><td>LINQ Overview</td></tr>
+                            <tr onclick="loadVideo('https://www.youtube.com/embed/tgbNymZ7vqY')"><td>LINQ Overview</td></tr>
+                            <tr onclick="loadVideo('https://www.youtube.com/embed/tgbNymZ7vqY')"><td>LINQ Overview</td></tr>
+                            <tr onclick="loadVideo('https://www.youtube.com/embed/tgbNymZ7vqY')"><td>LINQ Overview</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Right column: Video Player -->
+                <div class="col-12 col-md-9" id="vidpart">
+                    <iframe id="videoFrame"
+                            class="video-frame"
+                            src="https://www.youtube.com/embed/Cc33wOBAKDM"
+                            title="Video Player"
+                            allowfullscreen></iframe>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Change video on playlist row click
+        function loadVideo(url) {
+            document.getElementById('videoFrame').src = url;
+        }
+    </script>
+</body>
+</html>

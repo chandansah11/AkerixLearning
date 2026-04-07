@@ -1,0 +1,330 @@
+﻿@model List<Main.Models.users>
+@{
+    ViewBag.Title = "userCRUD";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+<style>
+    table {
+        margin-top: 5%;
+        margin-left: 10%;
+    }
+
+    th, tr, td {
+        border: 1px solid black;
+        text-align: center;
+        height: 30px;
+    }
+
+    h2 {
+        width: 80%;
+        text-align: center;
+        margin-left: 7%;
+    }
+
+    button {
+        margin-top: 5%;
+        width: 10%;
+    }
+
+    #headdiv {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+    }
+
+    #srchdiv {
+        display: flex;
+        align-items: center;
+        column-gap: 10px;
+    }
+
+    #srch {
+        height: 36px;
+        border-radius: 25px;
+        padding: 0 10px;
+        box-sizing: border-box;
+        margin-top: 15px;
+    }
+
+    #searchFilter {
+        height: 36px;
+        border-radius: 25px;
+        padding: 0 10px;
+        box-sizing: border-box;
+        margin-top: 15px;
+        width: 120px;
+    }
+
+    #crudbtns {
+        display: flex;
+        align-items: center;
+        column-gap: 10px;
+    }
+
+    #slct, #srchbtn, #editBtn {
+        width: 70px;
+        height: 40px;
+        border-radius: 20px;
+        margin-top: 15px;
+    }
+
+    #table {
+        width: 100%;
+        padding: 5px;
+        height: auto;
+        overflow-y: auto;
+        max-width: 100%;
+        max-height: 50rem;
+    }
+
+    #usertable {
+        table-layout: fixed; /* keeps columns fixed width */
+        width: 80%; /* your existing width */
+        word-wrap: break-word; /* wraps long text */
+    }
+
+        #usertable th, #usertable td {
+            overflow: hidden;
+            text-overflow: ellipsis; /* adds “…” if text is too long */
+            white-space: nowrap; /* optional — keeps text on one line */
+        }
+</style>
+
+<h2>User Table</h2>
+
+<div id="headdiv">
+    <div id="srchdiv">
+        <select id="searchFilter" class="form-control">
+            <option value="email">Email</option>
+            <option value="firstname">First Name</option>
+            <option value="lastname">Last Name</option>
+            <option value="phonenumber">Phone Number</option>
+        </select>
+        <input id="srch" type="search" placeholder="Search..." />
+        <button id="srchbtn">Search</button>
+        <button id="resetBtn">Reset</button>
+    </div>
+
+    <div id="crudbtns">
+        <button id="slct">Select</button>
+        <button id="editBtn">Edit</button>
+    </div>
+</div>
+
+<div id="table">
+    <table class="table table-hover align-middle" id="usertable">
+        <thead>
+            <tr id="userrow">
+                <th>Email</th>
+                <th>FirstName</th>
+                <th>LastName</th>
+                <th>PhoneNumber</th>
+                <th>Gender</th>
+            </tr>
+
+        </thead>
+        <tbody>
+
+
+            @foreach (var user in Model)
+            {
+                <tr>
+                    <td>@user.email</td>
+                    <td>@user.firstname</td>
+                    <td>@user.lastname</td>
+                    <td>@user.phonenumber</td>
+                    <td>@user.gender</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script>
+    $(document).ready(function () {
+        const table = document.getElementById("usertable");
+        const editBtn = document.getElementById("editBtn");
+        let checkboxAdded = false;
+        let isEditing = false;
+        const maxSelection = 5;
+        let allUsers = [];
+
+        editBtn.disabled = true;
+
+        // Store all users on page load
+        for (let i = 1; i < table.rows.length; i++) {
+            const row = table.rows[i];
+            allUsers.push({
+                id: row.dataset.userid,
+                email: row.cells[0].innerText,
+                firstname: row.cells[1].innerText,
+                lastname: row.cells[2].innerText,
+                phonenumber: row.cells[3].innerText,
+                gender: row.cells[4].innerText
+            });
+        }
+
+        // 🔍 Search
+        $("#srchbtn").click(function () {
+            const searchValue = $("#srch").val().trim().toLowerCase();
+            const searchFilter = $("#searchFilter").val();
+
+            if (searchValue === "") {
+                alert("Please enter a search term");
+                return;
+            }
+
+            while (table.rows.length > 1) table.deleteRow(1);
+
+            const filteredUsers = allUsers.filter(user =>
+                user[searchFilter].toString().toLowerCase().includes(searchValue)
+            );
+
+            if (filteredUsers.length === 0) {
+                const row = table.insertRow();
+                const cell = row.insertCell(0);
+                cell.colSpan = 5;
+                cell.innerText = "No results found";
+                cell.style.textAlign = "center";
+            } else {
+                filteredUsers.forEach(user => {
+                    const row = table.insertRow();
+                    row.dataset.userid = user.id;
+                    row.insertCell(0).innerText = user.email;
+                    row.insertCell(1).innerText = user.firstname;
+                    row.insertCell(2).innerText = user.lastname;
+                    row.insertCell(3).innerText = user.phonenumber;
+                    row.insertCell(4).innerText = user.gender;
+                });
+            }
+
+            checkboxAdded = false;
+            editBtn.disabled = true;
+        });
+
+        // 🔁 Reset
+        $("#resetBtn").click(function () {
+            while (table.rows.length > 1) table.deleteRow(1);
+            allUsers.forEach(user => {
+                const row = table.insertRow();
+                row.dataset.userid = user.id;
+                row.insertCell(0).innerText = user.email;
+                row.insertCell(1).innerText = user.firstname;
+                row.insertCell(2).innerText = user.lastname;
+                row.insertCell(3).innerText = user.phonenumber;
+                row.insertCell(4).innerText = user.gender;
+            });
+            $("#srch").val("");
+            checkboxAdded = false;
+            editBtn.disabled = true;
+        });
+
+        // ✅ Select button
+        $("#slct").click(function () {
+            if (!checkboxAdded) {
+                for (let i = 1; i < table.rows.length; i++) {
+                    const row = table.rows[i];
+                    const cell = row.insertCell();
+                    cell.innerHTML = '<input type="checkbox">';
+                }
+
+                const header = table.rows[0];
+                const th = header.insertCell();
+                th.innerText = "Select";
+                th.style.textAlign = "center";
+
+                $('#usertable input[type="checkbox"]').change(function () {
+                    const checkedBoxes = $('#usertable input[type="checkbox"]:checked');
+                    if (checkedBoxes.length > maxSelection) {
+                        this.checked = false;
+                        alert("Maximum 5 selections allowed");
+                    }
+                });
+
+                editBtn.disabled = false;
+            } else {
+                for (let row of table.rows) row.deleteCell(-1);
+                editBtn.disabled = true;
+            }
+
+            checkboxAdded = !checkboxAdded;
+        });
+
+        // ✏️ Edit button
+        editBtn.addEventListener("click", () => {
+            if (!checkboxAdded) return;
+
+            if (!isEditing) {
+                for (let i = 1; i < table.rows.length; i++) {
+                    const row = table.rows[i];
+                    const checkbox = row.cells[row.cells.length - 1] ?.querySelector('input[type="checkbox"]');
+                    if (checkbox && checkbox.checked) {
+                        for (let j = 0; j < row.cells.length - 1; j++) {
+                            const cell = row.cells[j];
+                            cell.contentEditable = true;
+                            cell.style.backgroundColor = "lightgray";
+                        }
+                    }
+                }
+                isEditing = true;
+                editBtn.innerText = "Save";
+            } else {
+                saveEditedUsers();
+
+                for (let i = 1; i < table.rows.length; i++) {
+                    const row = table.rows[i];
+                    for (let j = 0; j < row.cells.length - 1; j++) {
+                        const cell = row.cells[j];
+                        cell.contentEditable = false;
+                        cell.style.backgroundColor = "";
+                    }
+                }
+
+                for (let row of table.rows) row.deleteCell(-1);
+
+                isEditing = false;
+                checkboxAdded = false;
+                editBtn.innerText = "Edit";
+                editBtn.disabled = true;
+            }
+        });
+
+        function getEditedRows() {
+            const editedData = [];
+            for (let i = 1; i < table.rows.length; i++) {
+                const row = table.rows[i];
+                const checkbox = row.cells[row.cells.length - 1] ?.querySelector('input[type="checkbox"]');
+                if (checkbox && checkbox.checked) {
+                    editedData.push({
+                        Id: row.dataset.userid,
+                        email: row.cells[0].innerText,
+                        firstname: row.cells[1].innerText,
+                        lastname: row.cells[2].innerText,
+                        phonenumber: row.cells[3].innerText,
+                        gender: row.cells[4].innerText
+                    });
+                }
+            }
+            return editedData;
+        }
+
+        function saveEditedUsers() {
+            const editedUsers = getEditedRows();
+            $.ajax({
+                url: '/Adminpage/UpdateUsers',
+                type: 'POST',
+                contentType: 'application/json; charset=utf-8',
+                data: JSON.stringify(editedUsers),
+                dataType: 'json',
+                success: function (response) {
+                    if (response.success) alert("Users updated successfully!");
+                },
+                error: function (xhr, status, error) {
+                    alert("Error updating users: " + error);
+                }
+            });
+        }
+    });
+</script>

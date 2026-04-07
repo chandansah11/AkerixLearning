@@ -1,0 +1,342 @@
+﻿@{
+    ViewBag.Title = "coursesCRUD";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<style>
+    .coursecontainer {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 1.5rem;
+        padding: 15px;
+        justify-items: center;
+    }
+
+    .card {
+        width: 100%;
+        max-width: 280px;
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        transition: transform 0.2s ease;
+        position: relative;
+    }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+    .card-body {
+        padding: 1rem;
+        flex-grow: 1;
+    }
+
+    .card-title {
+        font-size: 1rem;
+        color: #444;
+        margin-bottom: 0.3rem;
+    }
+
+    .card-text {
+        font-size: 0.9rem;
+        color: #666;
+    }
+
+    .img-frame {
+        width: 100%;
+        height: 200px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        background-color: #fff;
+        position: relative;
+    }
+
+        .img-frame img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            object-position: center;
+        }
+
+    .thumbnail-btn {
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        background-color: rgba(255,255,255,0.9);
+        border: none;
+        border-radius: 5px;
+        padding: 4px 8px;
+        font-size: 0.8rem;
+        cursor: pointer;
+    }
+
+    .edit-btn, .save-btn {
+        margin-top: 0.5rem;
+        margin-right: 0.5rem;
+    }
+
+    #course {
+        border: none;
+        box-shadow: 1px 6px 5px lightgray;
+        padding: 10px;
+        margin-top: 4rem;
+    }
+
+    #courseheader {
+        display: flex;
+        align-items: center;
+        padding: 1rem;
+        column-gap: 1rem;
+        flex-wrap: wrap;
+        width: 100%;
+    }
+
+    #coursename {
+        color: gray;
+        margin: 0;
+        flex: 1;
+    }
+
+    #heading {
+        width: 100%;
+    }
+</style>
+
+<div class="container" id="heading">
+    
+    <!-- Button trigger modal -->
+    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
+        AddCourse
+    </button>
+
+    <!-- Modal -->
+    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <label style="margin-right:1rem;">Course Name </label>
+                    <input id="coursename"/>
+                    
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" id="addcourse">Add</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="course d-none" id="course-template" style="display:none; box-shadow:2px 4px 5px lightgray; margin-bottom:2rem;">
+    <div class="container courseheader">
+        <h3 class="coursename"></h3>
+        <button class="btn btn-secondary addplaylistbtn">Add Playlist</button>
+    </div>
+    <hr style="border: 1px solid lightgray;" />
+    <div class="coursecontainer"></div>
+</div>
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $.ajax({
+            url: '/Adminpage/GetallcourseandResplaylists',
+            type: 'GET',
+            success: function (response) {
+                const $template = $("#course-template");
+                $(".course").not($template).remove(); // clear old courses
+
+                if (!response || response.length === 0) {
+                    console.log("No courses in response");
+                    return;
+                }
+
+                $.each(response, function (i, item) {
+                    const $newCourse = $template.clone(true, true)
+                        .removeClass("d-none")
+                        .removeAttr("id")
+                        .show(); // important: show the clone
+
+                    $newCourse.find(".coursename").text(item.Name);
+                    const $container = $newCourse.find(".coursecontainer").empty();
+
+                    if (item.Playlists && item.Playlists.length > 0) {
+                        $.each(item.Playlists, function (j, playlist) {
+                            const $card = $(`
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">${playlist.Name}</h5>
+                            <p class="card-text">${playlist.Description || ""}</p>
+                        </div>
+                    </div>
+                `);
+                            $container.append($card);
+                        });
+                    }
+
+                    $template.after($newCourse);
+                });
+            },
+
+  
+            error: function () {
+                alert("Error loading courses");
+            }
+        });
+ 
+
+        // --- Add Course (duplicate the entire section) ---
+        $("#addcourse").click(function () {
+
+            const $lastCourse = $(".course").last();
+            const $newCourse = $lastCourse.clone(true, true);
+            const newCourseName = $(".coursename").val();
+            $newCourse.find(".coursename").text(newCourseName);
+            $newCourse.find(".coursecontainer").empty();
+            $newCourse.insertAfter($lastCourse);
+            
+            $.ajax({
+
+                url: '/Adminpage/addcourse',
+                type: 'POST',
+                data: { coursename: newCourseName },
+                success: function (response) {
+                    if (response.success) alert("Course added successfully");
+                },
+                error: function (xhr, status, error) {
+                    alert("Error adding course. Please try again.");
+                }            
+            });
+            
+
+
+        });
+
+        // --- Add Playlist (adds new editable card) ---
+        $(document).on("click", ".addplaylistbtn", function () {
+            const $courseSection = $(this).closest(".course");
+            const $container = $courseSection.find(".coursecontainer");
+            const cardCount = $container.find(".card").length + 1;
+
+            const $newCard = $(`
+            <div class="card" data-link="#">
+                <button class="btn btn-sm btn-primary thumbnail-btn" style="margin:8px;">Add Thumbnail</button>
+                <input type="file" class="thumbnail-input d-none" accept="image/*">
+
+                <div class="img-frame">
+                    <img src="~/Content/Images/download.jpg" alt="logo" class="card-img-top">
+                </div>
+
+                <div class="card-body">
+                    <h5 class="card-title" style="margin-top:1rem; color:gray;">New Playlist ${cardCount}</h5>
+                    <p class="card-text" style="color:gray;">Auto-added playlist card.</p>
+
+                    <div class="d-flex justify-content-end gap-2 mt-2">
+                        <button class="btn btn-secondary btn-sm edit-btn">Edit</button>
+                        <button class="btn btn-success btn-sm save-btn" disabled>Save</button>
+                    </div>
+                </div>
+            </div>
+        `);
+
+            $container.append($newCard);
+        });
+
+        // --- Card click navigation (disabled when editing) ---
+        $(document).on("click", ".card", function (e) {
+            const $card = $(this);
+            if ($card.hasClass("is-editing")) {
+                e.stopPropagation();
+                e.preventDefault();
+                return;
+            }
+
+            if (!$(e.target).closest('button, input, textarea, [contenteditable]').length) {
+                const link = $card.data("link");
+                if (link && link !== "#") window.location.href = link;
+            }
+        });
+
+        // --- Add Thumbnail ---
+        $(document).on("click", ".thumbnail-btn", function (e) {
+            e.stopPropagation();
+            $(this).siblings(".thumbnail-input").click();
+        });
+
+        $(document).on("change", ".thumbnail-input", function (e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                const $img = $(this).siblings(".img-frame").find("img");
+                reader.onload = (ev) => $img.attr("src", ev.target.result);
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // --- Edit Description ---
+        $(document).on("click", ".edit-btn", function (e) {
+            e.stopPropagation();
+            const $card = $(this).closest(".card");
+            const $title = $card.find(".card-title");
+            const $desc = $card.find(".card-text");
+
+            // mark editing state
+            $card.addClass("is-editing");
+
+            // make both title and description editable
+            $title.attr("contenteditable", "true").css("border-bottom", "1px dashed #ccc");
+            $desc.attr("contenteditable", "true").css("border", "1px solid #ccc");
+
+            // enable/disable buttons
+            $card.find(".save-btn").prop("disabled", false);
+            $(this).prop("disabled", true);
+
+            // focus title first for convenience
+            $title.get(0).focus();
+        });
+ 
+
+        // --- Save Description ---
+        $(document).on("click", ".save-btn", function (e) {
+            e.stopPropagation();
+            const $card = $(this).closest(".card");
+            const $title = $card.find(".card-title");
+            const $desc = $card.find(".card-text");
+
+            // remove editing state
+            $card.removeClass("is-editing");
+
+            // lock fields
+            $title.attr("contenteditable", "false").css("border-bottom", "none");
+            $desc.attr("contenteditable", "false").css("border", "none");
+
+            // enable/disable buttons
+            $card.find(".edit-btn").prop("disabled", false);
+            $(this).prop("disabled", true);
+
+            // optional: handle save (AJAX) here
+            const newTitle = $title.text().trim();
+            const newDesc = $desc.text().trim();
+            console.log("Saved:", newTitle, newDesc);
+            // e.g. send via AJAX to server to persist
+
+            // user feedback
+            // alert("Playlist updated");
+        });
+ 
+    });
+</script>
+
+
+

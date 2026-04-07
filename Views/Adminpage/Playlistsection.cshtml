@@ -1,0 +1,250 @@
+﻿@{
+    ViewBag.Title = "Playlistsection";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Playlist Section</title>
+
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/bootstrap")
+
+    <style>
+        /* ===== MAIN PAGE LAYOUT ===== */
+        #maincontainer {
+            padding: 2rem;
+        }
+
+        h3, p {
+            color: gray;
+        }
+
+        #description {
+            border: none;
+            padding: 1rem;
+            box-shadow: 1px 2px 4px lightgray;
+        }
+
+        /* ===== UPLOAD SECTION ===== */
+        #uploadSection {
+            width: 100%;
+            max-width: 400px;
+            float: left;
+            margin-top: 2rem;
+            margin-bottom:2rem;
+        }
+
+            #uploadSection h5 {
+                color: #333;
+                
+            }
+
+            #uploadSection .card {
+                border-radius: 10px;
+                box-shadow: 1px 2px 5px lightgray;
+            }
+
+        /* ===== PLAYLIST AND VIDEO SECTION ===== */
+        #playlistcontent {
+            margin-top: 2rem;
+            clear: both; /* keeps playlist below upload section */
+
+        }
+
+        #playlistcol {
+            box-shadow: 1px 2px 4px lightgray;
+            max-height: 500px;
+            overflow-y: auto;
+        }
+
+            #playlistcol table {
+                width: 100%;
+            }
+
+            #playlistcol tr:hover {
+                background-color: #f1f1f1;
+                cursor: pointer;
+            }
+
+        #vidpart {
+            background-color: aliceblue;
+            box-shadow: 1px 2px 4px lightgray;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 1rem;
+        }
+
+        .video-frame {
+            width: 100%;
+            aspect-ratio: 16 / 9;
+        }
+
+        /* ===== RESPONSIVE FIX ===== */
+        @@media (max-width: 768px) {
+            #uploadSection {
+                float: none;
+                margin: 1rem auto;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container-fluid" id="maincontainer">
+
+        <div class="container">
+            <div class="row">
+                <div class="col-12 col-md-4" id="leftCol">
+                    <button class="btn btn-secondary" onclick="window.location.href='@Url.Action("Index", "Courses")'">Go Back</button>
+                </div>
+                <div class="col-12 col-md-8" id="rightCol">
+                    <h1>Akerix Learning</h1>
+                </div>
+            </div>
+        </div>
+        <div class="container" id="description">
+            <h3 class="text-center" id="courseTitle">C# Basic</h3>
+            <p id="courseDescription" contenteditable="false">
+                C# (pronounced C sharp) is a modern, object-oriented programming language developed by Microsoft as part of the .NET platform.
+                It is widely used for building desktop, web, and game applications.
+            </p>
+            <button class="btn btn-secondary" id="editBtn">Edit</button>
+            <button class="btn btn-success" id="saveBtn" disabled>Save</button>
+        </div>
+
+
+
+        <!-- Upload New Video Section (Top Left) -->
+        <div class="container" id="uploadSection">
+            <h5>Upload New Video</h5>
+            <div class="card p-3 shadow-sm">
+                <div class="mb-3">
+                    <label for="videoFile" class="form-label">Choose Video</label>
+                    <input class="form-control" type="file" id="videoFile" accept="video/*">
+                </div>
+
+                <div class="mb-3">
+                    <label for="videoTitle" class="form-label">Video Title</label>
+                    <input class="form-control" type="text" id="videoTitle" placeholder="Enter video title">
+                </div>
+
+                <button class="btn btn-primary w-100" id="uploadBtn">Upload</button>
+            </div>
+        </div>
+
+        <!-- Playlist and Video Section -->
+        <div class="container" id="playlistcontent">
+            <div class="row">
+                <!-- Playlist Table -->
+                <div class="col-12 col-md-3" id="playlistcol">
+                    <table class="table table-hover align-middle">
+                        <thead class="table-light">
+                            <tr><th>Playlist</th></tr>
+                        </thead>
+                        <tbody id="playlistTableBody">
+                            <tr onclick="loadVideo('https://www.w3schools.com/html/mov_bbb.mp4')">
+                                <td>Introduction</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Video Player -->
+                <div class="col-12 col-md-9" id="vidpart">
+                    <video id="videoPlayer" class="video-frame" controls>
+                        <source src="https://www.w3schools.com/html/mov_bbb.mp4" type="video/mp4">
+                        Your browser does not support HTML video.
+                    </video>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SCRIPT SECTION -->
+    <script>
+        const desc = document.getElementById('courseDescription');
+        const title = document.getElementById('courseTitle');
+        const editBtn = document.getElementById('editBtn');
+        const saveBtn = document.getElementById('saveBtn');
+
+        // When "Edit" is clicked
+        editBtn.addEventListener('click', () => {
+            desc.contentEditable = "true";
+            title.contentEditable = "true";
+            desc.style.border = "1px solid #ccc";
+            title.style.borderBottom = "1px solid #ccc";
+            desc.focus();
+            editBtn.disabled = true;
+            saveBtn.disabled = false;
+        });
+
+        // When "Save" is clicked
+        saveBtn.addEventListener('click', () => {
+            desc.contentEditable = "false";
+            title.contentEditable = "false";
+            desc.style.border = "none";
+            title.style.border = "none";
+            editBtn.disabled = false;
+            saveBtn.disabled = true;
+
+            const newTitle = title.innerText.trim();
+            const newDescription = desc.innerText.trim();
+
+            // You can replace this with an AJAX call to save on the server
+            console.log("Saved Title:", newTitle);
+            console.log("Saved Description:", newDescription);
+
+            alert("Description saved successfully!");
+        });
+        const uploadBtn = document.getElementById('uploadBtn');
+        const videoFile = document.getElementById('videoFile');
+        const videoTitle = document.getElementById('videoTitle');
+        const playlistBody = document.getElementById('playlistTableBody');
+        const videoPlayer = document.getElementById('videoPlayer');
+
+        uploadBtn.addEventListener('click', function () {
+            const file = videoFile.files[0];
+            const title = videoTitle.value.trim();
+
+            if (!file) {
+                alert("Please select a video file.");
+                return;
+            }
+            if (!title) {
+                alert("Please enter a video title.");
+                return;
+            }
+
+            // Create blob URL for local playback
+            const videoURL = URL.createObjectURL(file);
+
+            // Add to playlist
+            const newRow = document.createElement('tr');
+            newRow.innerHTML = `<td>${title}</td>`;
+            newRow.style.cursor = 'pointer';
+            newRow.onclick = function () {
+                loadVideo(videoURL);
+            };
+
+            playlistBody.appendChild(newRow);
+
+            // Reset inputs
+            videoFile.value = "";
+            videoTitle.value = "";
+
+            alert("Video uploaded successfully!");
+        });
+
+        function loadVideo(url) {
+            videoPlayer.src = url;
+            videoPlayer.play();
+        }
+    
+    </script>
+</body>
+</html>

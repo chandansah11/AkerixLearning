@@ -1,0 +1,17 @@
+﻿
+
+@model List<string>
+
+<ul class="dropdown-menu">
+    @if (Model != null && Model.Any())
+    {
+        foreach (var course in Model)
+        {
+            <li><a class="dropdown-item" href="#">@course</a></li>
+        }
+    }
+    else
+    {
+        <li><a class="dropdown-item disabled" href="#">No courses available</a></li>
+    }
+</ul>
